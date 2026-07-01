@@ -7,8 +7,8 @@
 ---
 
 ## Задача 1. BPMN 2.0 модель процесса выдачи IT-оборудования
-
-- 📝 [BPMN 2.0 диаграмма](docs/bpmn/task1-process-diagram.bpmn)
+- 📝 [Исходник .bpmn (BPMN 2.0)](docs/bpmn/task1-process-diagram.bpmn)
+  
 ![Изображение диаграммы](docs/bpmn/task1-process-diagram.svg)
 
 ## Задача 2. Личный кабинет продавца для публикации товаров на маркетплейсе
@@ -17,8 +17,8 @@
 - 📄 [Текстовый формат](docs/requirements/task2-user-story-use-case.md)
 
 ### UML-схема процесса
-
 - 📝 [Исходник .puml](docs/uml/task2-marketplace-seller-diagram.puml)
+
 ![Изображение схемы](docs/uml/task2-marketplace-seller-diagram.png)
 
 ## Задача 3. REST API регистрации пользователя в книжном магазине
