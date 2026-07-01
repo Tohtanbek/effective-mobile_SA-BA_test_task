@@ -1,0 +1,55 @@
+@startuml
+title Алгоритм регистрации пользователя (Backend)
+
+actor "Фронтенд" as Client
+participant "Бэкенд (API)" as Backend
+participant "Сервер reCaptcha" as Captcha
+database "База Данных" as DB
+
+Client -> Backend: POST /register\n(firstName, lastName, userName, password, recaptchaToken)
+
+group 1. Проверка лимитов (Rate Limit)
+    Backend -> Backend: Проверка количества запросов
+    alt Лимит превышен
+        Backend --> Client: 429 Too Many Requests\n(Превышен лимит запросов)
+    end
+end
+
+group 2. Валидация входных данных
+    Backend -> Backend: Проверка обязательных полей (required)
+    Backend -> Backend: Проверка форматов (RegEx) и длины полей
+    alt Ошибка валидации (пустое поле, слабый пароль и т.д.)
+        Backend --> Client: 400 Bad Request\n(Список ошибок по полям)
+    end
+end
+
+group 3. Проверка reCaptcha
+    Backend -> Captcha: Валидация recaptchaToken
+    Captcha --> Backend: Результат проверки
+    alt Токен недействителен
+        Backend --> Client: 422 Unprocessable Entity\n(Ошибка проверки reCaptcha на сервере)
+    end
+end
+
+group 4. Проверка бизнес-правил (Уникальность)
+    Backend -> DB: Поиск пользователя по userName
+    DB --> Backend: Результат поиска
+    alt userName уже занят
+        Backend --> Client: 409 Conflict\n(Имя пользователя уже занято)
+    end
+end
+
+group 5. Создание пользователя
+    Backend -> Backend: Генерация userId (UUID)
+    Backend -> DB: Сохранение нового пользователя
+    
+    alt Внутренняя ошибка при сохранении
+        DB --> Backend: Ошибка БД
+        Backend --> Client: 500 Internal Server Error\n(Внутренняя ошибка сервера)
+    else Успешное сохранение
+        DB --> Backend: Успех
+        Backend --> Client: 201 Created\n(userId, userName, firstName, lastName, message)
+    end
+end
+
+@enduml

@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: API регистрации в книжном онлайн-магазине
+  version: 1.0.0
+  description: API для регистрации пользователей
+
+tags: 
+  - name: Регистрация
+
+servers:
+  - url: https://bookstore.example.com/v1
+    
+paths:
+  /register:
+    post:
+      tags: 
+        - Регистрация
+      operationId: registerUser
+      summary: Регистрация нового пользователя
+      description: >
+        Эндпоинт вызывается фронтендом при нажатии кнопки "Register".
+        Создает новую учетную запись пользователя.
+      
+      parameters:
+        - name: X-Recaptcha-Token
+          in: header
+          required: true
+          description: Токен, полученный после успешного прохождения reCaptcha на фронтенде
+          schema:
+            type: string
+            minLength: 1
+          example: "03AGdBq24CxzH6N_like_real_recaptcha_token_from_google"
+
+      requestBody:
+        required: true
+        description: Данные для регистрации
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              firstName: Иван
+              lastName: Петров
+              userName: ivanpetrov
+              password: SecurePass1!
+
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              example:
+                status: success
+                data:
+                  userId: "550e8400-e29b-41d4-a716-446655440000"
+                  userName: ivanpetrov
+                  firstName: Иван
+                  lastName: Петров
+                message: Пользователь успешно зарегистрирован
+
+        '400':
+          description: Ошибка валидации входных данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingField:
+                  summary: Отсутствует обязательное поле
+                  value:
+                    status: error
+                    code: 400
+                    message: Ошибка валидации
+                    errors:
+                      - field: firstName
+                        message: Имя обязательно для заполнения
+                missingRecaptchaHeader:
+                  summary: Отсутствует заголовок reCaptcha
+                  value:
+                    status: error
+                    code: 400
+                    message: Ошибка валидации
+                    errors:
+                      - field: X-Recaptcha-Token
+                        message: Заголовок X-Recaptcha-Token обязателен
+                weakPassword:
+                  summary: Пароль не соответствует требованиям
+                  value:
+                    status: error
+                    code: 400
+                    message: Ошибка валидации пароля
+                    errors:
+                      - field: password
+                        message: Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву, одну цифру и один специальный символ
+
+        '409':
+          description: Конфликт - имя пользователя уже занято
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                code: 409
+                message: Имя пользователя уже занято
+                errors:
+                  - field: userName
+                    message: Пользователь с таким именем уже существует. Выберите другое имя
+
+        '422':
+          description: Ошибка обработки запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                code: 422
+                message: Невозможно обработать запрос
+                errors:
+                  - field: X-Recaptcha-Token
+                    message: Ошибка проверки reCaptcha токена на сервере
+
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                code: 500
+                message: Внутренняя ошибка сервера
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - userName
+        - password
+      properties:
+        firstName:
+          type: string
+          description: Имя пользователя
+          minLength: 1
+          maxLength: 50
+          pattern: '^[a-zA-Zа-яА-ЯёЁ\s\-]+$'
+          example: Иван
+        lastName:
+          type: string
+          description: Фамилия пользователя
+          minLength: 1
+          maxLength: 50
+          pattern: '^[a-zA-Zа-яА-ЯёЁ\s\-]+$'
+          example: Петров
+        userName:
+          type: string
+          description: Уникальное имя пользователя для входа в систему
+          minLength: 3
+          maxLength: 30
+          pattern: '^[a-zA-Z0-9._-]+$'
+          example: ivanpetrov
+        password:
+          type: string
+          format: password
+          description: |
+            Пароль пользователя. Требования к паролю:
+            - Минимум 8 символов
+            - Минимум одна заглавная буква (A-Z)
+            - Минимум одна строчная буква (a-z)
+            - Минимум одна цифра (0-9)
+            - Минимум один специальный символ (не буквенно-цифровой)
+          minLength: 8
+          maxLength: 128
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~`])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?~`]{8,}$'
+          example: SecurePass1!
+
+    SuccessResponse:
+      type: object
+      required:
+        - status
+        - data
+      properties:
+        status:
+          type: string
+          enum: [success]
+          description: Статус ответа
+          example: success
+        data:
+          type: object
+          required:
+            - userId
+            - userName
+            - firstName
+            - lastName
+          properties:
+            userId:
+              type: string
+              format: uuid
+              description: Уникальный идентификатор пользователя
+              example: "550e8400-e29b-41d4-a716-446655440000"
+            userName:
+              type: string
+              description: Имя пользователя для входа
+              example: ivanpetrov
+            firstName:
+              type: string
+              description: Имя зарегистрированного пользователя
+              example: Иван
+            lastName:
+              type: string
+              description: Фамилия зарегистрированного пользователя
+              example: Петров
+        message:
+          type: string
+          description: Описание результата операции
+          example: Пользователь успешно зарегистрирован
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - code
+        - message
+      properties:
+        status:
+          type: string
+          enum: [error]
+          description: Статус ответа
+          example: error
+        code:
+          type: integer
+          description: HTTP код ошибки
+          minimum: 400
+          maximum: 599
+          example: 400
+        message:
+          type: string
+          description: Краткое описание ошибки
+          example: Ошибка валидации
+        errors:
+          type: array
+          description: Список детальных ошибок
+          items:
+            type: object
+            required:
+              - field
+              - message
+            properties:
+              field:
+                type: string
+                description: Поле, в котором обнаружена ошибка
+                example: password
+              message:
+                type: string
+                description: Детальное сообщение об ошибке
+                example: Пароль должен содержать минимум 8 символов, одну заглавную букву, одну строчную букву, одну цифру и один специальный символ
