@@ -6,46 +6,25 @@
 
 ---
 
-## 📊 Артефакты
+## Задача 1. BPMN 2.0 модель процесса выдачи IT-оборудования
 
-### 1. BPMN Диаграмма процесса
-- 📄 [Скачать .bpmn](docs/bpmn/task1-process-diagram.bpmn)
-- 🔧 [Открыть в bpmn.io](https://bpmn.io/tool/bpmn-js/)
+**Артефакты:**
+- 📄 [BPMN 2.0 диаграмма](docs/bpmn/task1-process-diagram.bpmn)
+- 🔧 [Просмотр в bpmn.io](https://bpmn.io/tool/bpmn-js/)
 
-### 2. UML Диаграммы
+## Задача 2. Линчый кабинет продавца для публикации товаров на маркетплейсе
 
-#### Диаграмма классов (Marketplace Seller)
-![Диаграмма классов](docs/uml/task2-marketplace-seller-diagram.png)
+### User story, Use Case
+- [Текстовый формат](docs/requirements/task2-user-story-use-case.md)
+
+### UML-схема процесса
+![Изображение](docs/uml/task2-marketplace-seller-diagram.png)
 - 📝 [Исходник .puml](docs/uml/task2-marketplace-seller-diagram.puml)
 
-#### Диаграмма последовательности (Book Shop Registration)
-![Диаграмма последовательности](docs/uml/task3-book-shop-registration-flow-diagram.png)
-- 📝 [Исходник .puml](docs/uml/task3-book-shop-registration-flow-diagram.puml)
 
-### 3. Требования
-- 📋 [User Stories & Use Cases](docs/requirements/task2-user-story-use-case.md)
+## Задача 3. REST API регистрации пользователя в книжном магазине
 
-### 4. API Спецификация
-- 📄 [openapi.yaml](docs/api/task-3-rest-openapi.yaml)
-- 🌐 [Swagger UI (HTML)](docs/api/task-3-rest-openapi.html)
-- 🚀 [Просмотр в Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/ВАШ_НИК/effective-mobile_SA-BA_test_task/main/docs/api/task-3-rest-openapi.yaml)
-
----
-
-## 📁 Структура проекта
-```
-.
-└── docs/
-    ├── api/
-    │   ├── task-3-rest-openapi.yaml
-    │   └── task-3-rest-openapi.html
-    ├── bpmn/
-    │   └── task1-process-diagram.bpmn
-    ├── requirements/
-    │   └── task2-user-story-use-case.md
-    └── uml/
-        ├── task2-marketplace-seller-diagram.puml
-        ├── task2-marketplace-seller-diagram.png
-        ├── task3-book-shop-registration-flow-diagram.puml
-        └── task3-book-shop-registration-flow-diagram.png
-```
+### 3.1. REST API спецификация
+- 📄 [OpenAPI 3.0 спецификация](docs/api/task-3-rest-openapi.yaml)
+- 🌐 [Swagger UI (HTML документация)](docs/api/task-3-rest-openapi.html)
+- 🚀 [Просмотр в Swagger Editor](https://editor.swagger.io/)
